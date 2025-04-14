@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jam Digital</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: black;
+      color: lime;
+      font-family: monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-size: 10vw;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="clock">--:--:--</div>
+
+  <script>
+    function updateClock() {
+      const now = new Date();
+      const jam = now.getHours().toString().padStart(2, '0');
+      const menit = now.getMinutes().toString().padStart(2, '0');
+      const detik = now.getSeconds().toString().padStart(2, '0');
+      document.getElementById("clock").textContent = `${jam}:${menit}:${detik}`;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock(); // panggil sekali di awal
+
+    // Wake Lock API untuk Always On Screen
+    let wakeLock = null;
+
+    async function requestWakeLock() {
+      try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        console.log("Wake Lock aktif");
+
+        // kalau terlepas, coba lagi
+        wakeLock.addEventListener('release', () => {
+          console.log("Wake Lock terlepas");
+        });
+      } catch (err) {
+        console.error(`${err.name}, ${err.message}`);
+      }
+    }
+
+    if ('wakeLock' in navigator) {
+      requestWakeLock();
+
+      // Kalau user mengaktifkan ulang (misalnya berpindah tab)
+      document.addEventListener('visibilitychange', () => {
+        if (wakeLock !== null && document.visibilityState === 'visible') {
+          requestWakeLock();
+        }
+      });
+    } else {
+      console.warn("Wake Lock API tidak didukung di browser ini");
+    }
+  </script>
+</body>
+</html>

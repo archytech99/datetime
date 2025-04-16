@@ -1,3 +1,5 @@
 # DateTime
 
-Website Jam Digital dengan fitur "Always On Screen" khusus versi Android
+## Deskripsi
+
+Website Jam Digital dengan fitur "Always On Screen" khusus versi Android. Buka [disini](https://archytech99.github.io/datetime)

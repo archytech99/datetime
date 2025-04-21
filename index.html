@@ -7,7 +7,7 @@
     <title>DATETIME</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon" />
 
 	<!-- Font Share Tech Mono -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -187,21 +187,30 @@
         updateClock();
         setInterval(updateClock, 1000);
 
-        // Deteksi status baterai
-        if ('getBattery' in navigator) {
-                navigator.getBattery().then(function(battery) {
-                function updateBatteryStatus() {
-                    const percent = Math.round(battery.level * 100);
-                    const charging = battery.charging ? "⚡" : "";
-                    batteryDiv.textContent = `Baterai: ${percent}% ${charging}`;
-                }
-                updateBatteryStatus();
-                battery.addEventListener('levelchange', updateBatteryStatus);
-                battery.addEventListener('chargingchange', updateBatteryStatus);
-            });
-        } else {
-            batteryDiv.textContent = "Status baterai tidak didukung.";
-        }
+		// Platform detection
+		function isAndroid() {
+			return /Android/i.test(navigator.userAgent);
+		}
+
+		function isIOS() {
+			return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+		}
+
+		// Baterai (khusus Android & iOS yang mendukung)
+		if ((isAndroid() || isIOS()) && 'getBattery' in navigator) {
+			navigator.getBattery().then(function(battery) {
+				function updateBatteryStatus() {
+					const percent = Math.round(battery.level * 100);
+					const charging = battery.charging ? "⚡" : "";
+					batteryDiv.textContent = `Baterai: ${percent}% ${charging}`;
+				}
+				updateBatteryStatus();
+				battery.addEventListener('levelchange', updateBatteryStatus);
+				battery.addEventListener('chargingchange', updateBatteryStatus);
+			});
+		} else {
+			batteryDiv.remove(); // sembunyikan/hapus jika bukan Android/iOS atau tidak didukung
+		}
 
         // Wake Lock
         let wakeLock = null;

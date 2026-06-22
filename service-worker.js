@@ -6,7 +6,8 @@ self.addEventListener("install", (e) => {
         "/index.html",
         "/manifest.json",
         "/icon-192.png",
-        "/icon-512.png"
+        "/icon-512.png",
+        "/share-tech-mono.woff2"
       ])
     )
   );

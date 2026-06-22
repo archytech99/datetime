@@ -190,21 +190,23 @@
         }
 
         if ((isAndroid() || isIOS()) && 'getBattery' in navigator) {
-            try {
-                const battery = await navigator.getBattery();
-                function updateBatteryStatus() {
-                    const percent = Math.round(battery.level * 100);
-                    const charging = battery.charging ? " ⚡" : "";
-                    batteryDiv.textContent = `BATERAI: ${percent}%${charging}`;
+            (async () => {
+                try {
+                    const battery = await navigator.getBattery();
+                    function updateBatteryStatus() {
+                        const percent = Math.round(battery.level * 100);
+                        const charging = battery.charging ? " ⚡" : "";
+                        batteryDiv.textContent = `BATERAI: ${percent}%${charging}`;
+                    }
+                    updateBatteryStatus();
+                    battery.addEventListener('levelchange', updateBatteryStatus);
+                    battery.addEventListener('chargingchange', updateBatteryStatus);
+                } catch (err) {
+                    console.debug(`Battery status unavailable: ${err.message}`);
+                    batteryDiv.textContent = 'BATERAI: --';
+                    batteryDiv.style.display = 'none';
                 }
-                updateBatteryStatus();
-                battery.addEventListener('levelchange', updateBatteryStatus);
-                battery.addEventListener('chargingchange', updateBatteryStatus);
-            } catch (err) {
-                console.debug(`Battery status unavailable: ${err.message}`);
-                batteryDiv.textContent = 'BATERAI: --';
-                batteryDiv.style.display = 'none';
-            }
+            })();
         } else {
             batteryDiv.textContent = 'BATERAI: --';
             batteryDiv.style.display = 'none';

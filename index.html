@@ -181,15 +181,12 @@
         updateClock();
         setInterval(updateClock, 1000);
 
-        function isAndroid() {
-            return /Android/i.test(navigator.userAgent);
+        function isMobile() {
+            return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+                (('ontouchstart' in window) && window.innerWidth <= 1024);
         }
 
-        function isIOS() {
-            return /iPhone|iPad|iPod/i.test(navigator.userAgent);
-        }
-
-        if ((isAndroid() || isIOS()) && 'getBattery' in navigator) {
+        if (isMobile() && 'getBattery' in navigator) {
             (async () => {
                 try {
                     const battery = await navigator.getBattery();
@@ -204,11 +201,11 @@
                 } catch (err) {
                     console.debug(`Battery status unavailable: ${err.message}`);
                     batteryDiv.textContent = 'BATERAI: --';
-                    batteryDiv.style.display = 'none';
                 }
             })();
-        } else {
+        } else if (isMobile()) {
             batteryDiv.textContent = 'BATERAI: --';
+        } else {
             batteryDiv.style.display = 'none';
         }
 

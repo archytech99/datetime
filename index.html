@@ -176,6 +176,29 @@
         updateClock();
         setInterval(updateClock, 1000);
 
+		function isAndroid() {
+			return /Android/i.test(navigator.userAgent);
+		}
+
+		function isIOS() {
+			return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+		}
+
+		if ((isAndroid() || isIOS()) && 'getBattery' in navigator) {
+			navigator.getBattery().then(function(battery) {
+				function updateBatteryStatus() {
+					const percent = Math.round(battery.level * 100);
+					const charging = battery.charging ? "⚡" : "";
+					batteryDiv.textContent = `Baterai: ${percent}% ${charging}`;
+				}
+				updateBatteryStatus();
+				battery.addEventListener('levelchange', updateBatteryStatus);
+				battery.addEventListener('chargingchange', updateBatteryStatus);
+			});
+		} else {
+			batteryDiv.remove(); // sembunyikan/hapus jika bukan Android/iOS atau tidak didukung
+		}
+
         let wakeLock = null;
 
         async function requestWakeLock() {
@@ -219,29 +242,6 @@
             enterFullscreen();
             requestWakeLock();
         }
-
-		function isAndroid() {
-			return /Android/i.test(navigator.userAgent);
-		}
-
-		function isIOS() {
-			return /iPhone|iPad|iPod/i.test(navigator.userAgent);
-		}
-
-		if ((isAndroid() || isIOS()) && 'getBattery' in navigator) {
-			navigator.getBattery().then(function(battery) {
-				function updateBatteryStatus() {
-					const percent = Math.round(battery.level * 100);
-					const charging = battery.charging ? "⚡" : "";
-					batteryDiv.textContent = `Baterai: ${percent}% ${charging}`;
-				}
-				updateBatteryStatus();
-				battery.addEventListener('levelchange', updateBatteryStatus);
-				battery.addEventListener('chargingchange', updateBatteryStatus);
-			});
-		} else {
-			batteryDiv.remove(); // sembunyikan/hapus jika bukan Android/iOS atau tidak didukung
-		}
 
         document.addEventListener('click', enableFullscreenAndWakeLock, { once: true });
         document.addEventListener('touchstart', enableFullscreenAndWakeLock, { once: true });
